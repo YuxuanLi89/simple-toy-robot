@@ -8,24 +8,25 @@ namespace Simple.Toy.Robot.Apps
 {
     public class ToyRobots
     {
-        public ToyRobots(){}
-
-        private int horizontalX;
-        private int verticalY;
-        private int boundaryLimits = 5;
-        private Direction direction;
-        public string _hits = string.Empty;
-        public string Hits
+        #region Properties
+        private int boundLimits = 5;
+        public int PositionX { get; set; }
+        public int PositionY { get; set; }
+        public Direction Direction { get; set; }
+        public Commands Commands { get; set; }
+        public string _hints = string.Empty;
+        #endregion
+        public string Hints
         {
-            get { return _hits; }
-            set { _hits = value; }
+            get { return _hints; }
+            set { _hints = value; }
         }
 
         public string Report()
         {
-            if (horizontalX <=5 && verticalY <=5)
+            if (PositionX <=5 && PositionY <=5)
             {
-                return String.Format("{0},{1},{2}", horizontalX, verticalY, direction.ToString());
+                return String.Format("{0},{1},{2}", PositionX, PositionY, Direction.ToString());
             }
             return "";
         }
@@ -34,61 +35,89 @@ namespace Simple.Toy.Robot.Apps
         {
             if (CheckCommand("move"))
             {
-                int newhorizontalX = HorizontalMove();
-                int newverticalY = VerticalMove();
-                if (CheckPosition(newhorizontalX, newverticalY))
+                int newPositionX = LeftRightMove();
+                int newPositionY = UpDownMove();
+                if (CheckPosition(newPositionX, newPositionY))
                 {
-                    horizontalX = newhorizontalX;
-                    verticalY = newverticalY;
+                    PositionX = newPositionX;
+                    PositionY = newPositionY;
                     return true;
                 }
             }
             return false;
         }
 
-        private int HorizontalMove()
+        private int LeftRightMove()
         {
-            if (direction == Direction.EAST)
+            if (Direction == Direction.EAST)
             {
-                return horizontalX + 1;
+                return PositionX + 1;
             }
-            if (direction == Direction.WEST)
+            if (Direction == Direction.WEST)
             {
-                return horizontalX - 1;
+                return PositionX - 1;
             }
 
-            return horizontalX;
+            return PositionX;
         }
 
-        private int VerticalMove()
+        private int UpDownMove()
         {
-            if (direction == Direction.NORTH)
+            if (Direction == Direction.NORTH)
             {
-                return verticalY + 1;
+                return PositionY + 1;
             }
-            if (direction == Direction.SOUTH)
+            if (Direction == Direction.SOUTH)
             {
-                return verticalY - 1;
+                return PositionY - 1;
             }
 
-            return verticalY;
+            return PositionY;
+        }
+
+        public bool Left()
+        {
+            try
+            {
+                Direction = (Convert.ToInt32(Direction) > 1) ? Direction - 1 : Direction + 3;
+            }
+            catch (Exception)
+            {
+                return false;
+                throw new Exception("Toy Robot cannot move to left");
+            }
+            return true;
+        }
+
+        public bool Right()
+        {
+            try
+            {
+                Direction = (Convert.ToInt16(Direction) < 4) ? Direction + 1 : Direction - 3;
+            }
+            catch (Exception)
+            {
+                return false;
+                throw new Exception("Toy Robot cannot move to right");
+            }
+            return true;
         }
 
         public bool CheckPosition(int x, int y)
         {
-            if (x > 5 || y > 5)
+            if (x < 0 || y < 0 || x > boundLimits || y > boundLimits)
             {
-                Hits = ("Toy Robot will drop down from table");
+                Hints = ("Toy Robot will drop down from table");
                 return false;
             }
             return true;
         }
 
-        public bool CheckCommand(string commands)
+        public bool CheckCommand(string Commands)
         {
-            if (horizontalX >=5 || verticalY >= 5)
+            if (PositionX >= boundLimits || PositionY >= boundLimits)
             {
-                Hits = String.Format("Cannot {0}, please select a valid position.", commands);
+                Hints = String.Format("Cannot {0}, please select a valid Position.", Commands);
                 return false;
             }
             return true;

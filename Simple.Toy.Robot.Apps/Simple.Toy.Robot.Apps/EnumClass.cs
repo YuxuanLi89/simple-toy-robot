@@ -16,11 +16,11 @@ namespace Simple.Toy.Robot.Apps
 
     public enum Commands
     {
-        
-        Move = 0,
-        Left = 1,
-        Right = 2,
-        Place = 3,
-        Report = 4,
+
+        PLACE = 1,
+        MOVE = 2,
+        LEFT = 3,
+        RIGHT = 4,
+        REPORT = 5
     }
 }
