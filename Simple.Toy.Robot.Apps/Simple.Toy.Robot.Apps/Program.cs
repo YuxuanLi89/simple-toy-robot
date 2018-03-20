@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 
 namespace Simple.Toy.Robot.Apps
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Console.Write("Welcome to Toy Robot Game!");
+            StartGaming();
+        }
+
+        public static void StartGaming()
+        {
+            Console.WriteLine("***************Welcome to Toy Robot Game***************");
+            Console.WriteLine("Please follow the instruction to start!");
+            Console.WriteLine("Good luck! Cheers!");
         }
     }
 }
