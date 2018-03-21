@@ -22,6 +22,22 @@ namespace Simple.Toy.Robot.Apps
             set { _hints = value; }
         }
 
+        public bool Place(int positionX, int positionY, Direction direction)
+        {
+            try
+            {
+                PositionX = positionX;
+                PositionY = positionY;
+                Direction = direction;
+            }
+            catch (Exception)
+            {
+
+                throw new Exception();
+            }
+            return true;
+        }
+
         public string Report()
         {
             if (PositionX <=5 && PositionY <=5)
@@ -47,7 +63,7 @@ namespace Simple.Toy.Robot.Apps
             return false;
         }
 
-        private int LeftRightMove()
+        public int LeftRightMove()
         {
             if (Direction == Direction.EAST)
             {
@@ -61,7 +77,7 @@ namespace Simple.Toy.Robot.Apps
             return PositionX;
         }
 
-        private int UpDownMove()
+        public int UpDownMove()
         {
             if (Direction == Direction.NORTH)
             {

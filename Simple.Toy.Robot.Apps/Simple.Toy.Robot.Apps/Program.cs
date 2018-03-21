@@ -11,6 +11,18 @@ namespace Simple.Toy.Robot.Apps
         public static void Main(string[] args)
         {
             StartGaming();
+            ToyRobots lee = new ToyRobots();
+            CommandProcessor cp = new CommandProcessor(lee);
+
+            while (true)
+            {
+                string command = Console.ReadLine();
+
+                if (command != "")
+                {
+                    Console.WriteLine(cp.ProcessCommand(command));
+                }
+            }
         }
 
         public static void StartGaming()
