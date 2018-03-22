@@ -18,32 +18,49 @@ namespace Simple.Toy.Robot.Apps
         public string ProcessCommand(string userInput)
         {
             string result = string.Empty;
-            string command = GetCommand(userInput.ToUpper());
-
+            string command = string.Empty;
             ParamaterRecorder paraRecorder = new ParamaterRecorder();
 
-            switch ((Commands)Enum.Parse(typeof(Commands), command, true))
+            try
             {
-                case Commands.PLACE:
-                    paraRecorder = RecordParameter(userInput);
-                    ToyRobot.Place(paraRecorder.PositionX, paraRecorder.PositionY, paraRecorder.direction);
-                    result = string.Format("{0},{1},{2}", paraRecorder.PositionX, paraRecorder.PositionY, paraRecorder.direction.ToString());
-                    break;
-                case Commands.MOVE:
-                    ToyRobot.Move();
-                    break;
-                case Commands.LEFT:
-                    ToyRobot.Left();
-                    break;
-                case Commands.RIGHT:
-                    ToyRobot.Right();
-                    break;
-                case Commands.REPORT:
-                    result = ToyRobot.Report();
-                    break;
-                default:
-                    break;
+                if (CheckUserInput(userInput))
+                {
+                    command = GetCommand(userInput);
+                }
+                else
+                {
+                    return ToyRobot.Hints;
+                }
+
+                switch ((Commands)Enum.Parse(typeof(Commands), command, true))
+                {
+                    case Commands.PLACE:
+                        paraRecorder = RecordParameter(userInput);
+                        ToyRobot.Place(paraRecorder.PositionX, paraRecorder.PositionY, paraRecorder.direction);
+                        result = string.Format("{0},{1},{2}", paraRecorder.PositionX, paraRecorder.PositionY, paraRecorder.direction.ToString());
+                        break;
+                    case Commands.MOVE:
+                        ToyRobot.Move();
+                        break;
+                    case Commands.LEFT:
+                        ToyRobot.Left();
+                        break;
+                    case Commands.RIGHT:
+                        ToyRobot.Right();
+                        break;
+                    case Commands.REPORT:
+                        result = ToyRobot.Report();
+                        break;
+                    default:
+                        break;
+                }
             }
+            catch (Exception)
+            {
+                Console.Write("Unknown command please try again.");
+            }
+
+            
 
             return result;
         }
@@ -102,6 +119,97 @@ namespace Simple.Toy.Robot.Apps
                 throw new Exception("Cannot get position X!");
             }
             return pr;
+        }
+
+        private bool CheckUserInput(string userInput)
+        {
+            try
+            {
+                if (Enum.IsDefined(typeof(Commands), userInput))
+                {
+                    if ((Commands)Enum.Parse(typeof(Commands), userInput, true) != Commands.PLACE)
+                    {
+                        if (CommandsInitializeChecking(userInput))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            Console.Write("Unknown command please try again.");
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        Console.Write("Unknown command please try again.");
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (userInput.IndexOf(" ") == -1)
+                    {
+                        Console.Write("Unknown command please try again.");
+                        return false;
+                    }
+                    else
+                    {
+                        string str = userInput.Substring(0, userInput.IndexOf(" "));
+                        if (CommandsInitializeChecking(str))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            Console.Write("Unknown command please try again.");
+                            return false;
+                        }
+
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                Console.Write("Unknown error please try again.");
+                return true;
+                throw new Exception();
+            }
+        }
+
+        private bool CommandsInitializeChecking(string userInput)
+        {
+            try
+            {
+                if (Enum.IsDefined(typeof(Commands), userInput))
+                {
+                    if ((Commands)Enum.Parse(typeof(Commands), userInput, true) != Commands.PLACE)
+                    {
+                        Console.Write("Please 'PLACE' a position to start.");
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    Console.Write("Unknown command please try again.");
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+                Console.Write("Unknown error please try again.");
+                return true;
+                throw new Exception();
+            }
+        }
+
+        private bool CheckParameter(string userInput)
+        {
+            return true;
         }
     }
 }

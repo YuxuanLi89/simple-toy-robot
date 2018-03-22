@@ -16,7 +16,7 @@ namespace Simple.Toy.Robot.Apps
 
             while (true)
             {
-                string command = Console.ReadLine();
+                string command = Console.ReadLine().ToUpper();
 
                 if (command != "")
                 {
