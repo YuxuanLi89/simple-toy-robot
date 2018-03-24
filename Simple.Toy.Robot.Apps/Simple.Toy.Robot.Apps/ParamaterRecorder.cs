@@ -10,6 +10,6 @@ namespace Simple.Toy.Robot.Apps
     {
         public int PositionX { get; set; }
         public int PositionY { get; set; }
-        public Direction direction { get; set; }
+        public Direction Direction { get; set; }
     }
 }

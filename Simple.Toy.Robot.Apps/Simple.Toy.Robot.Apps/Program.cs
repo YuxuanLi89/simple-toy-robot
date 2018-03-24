@@ -28,8 +28,7 @@ namespace Simple.Toy.Robot.Apps
         public static void StartGaming()
         {
             Console.WriteLine("***************Welcome to Toy Robot Game***************");
-            Console.WriteLine("Please follow the instruction to start!");
-            Console.WriteLine("Good luck! Cheers!");
+            Console.WriteLine("***************Good luck! Cheers!***************");
         }
     }
 }

@@ -15,12 +15,15 @@ namespace Simple.Toy.Robot.Apps
 
         public ToyRobots ToyRobot { get; set; }
 
+        private const string invalidCommandError = "Invalid input, please try again!";
+        private const string executeResult = "Please continue...";
+        private const string invalidMoveError = "Invalid Move.";
+
         public string ProcessCommand(string userInput)
         {
             string result = string.Empty;
             string command = string.Empty;
             ParamaterRecorder paraRecorder = new ParamaterRecorder();
-
             try
             {
                 if (CheckUserInput(userInput))
@@ -36,20 +39,47 @@ namespace Simple.Toy.Robot.Apps
                 {
                     case Commands.PLACE:
                         paraRecorder = RecordParameter(userInput);
-                        ToyRobot.Place(paraRecorder.PositionX, paraRecorder.PositionY, paraRecorder.direction);
-                        result = string.Format("{0},{1},{2}", paraRecorder.PositionX, paraRecorder.PositionY, paraRecorder.direction.ToString());
+                        if(ToyRobot.Place(paraRecorder.PositionX, paraRecorder.PositionY, paraRecorder.Direction))
+                        {
+                            ToyRobot.Hints = string.Format("{0},{1},{2}", paraRecorder.PositionX, paraRecorder.PositionY, paraRecorder.Direction.ToString());
+                        }
+                        else
+                        {
+                            ToyRobot.Hints = invalidCommandError;
+                        }
                         break;
                     case Commands.MOVE:
-                        ToyRobot.Move();
+                        if (ToyRobot.Move())
+                        {
+                            ToyRobot.Hints = executeResult;
+                        }
+                        else
+                        {
+                            ToyRobot.Hints = invalidMoveError;
+                        }
                         break;
                     case Commands.LEFT:
-                        ToyRobot.Left();
+                        if (ToyRobot.Left())
+                        {
+                            ToyRobot.Hints = executeResult;
+                        }
+                        else
+                        {
+                            ToyRobot.Hints = invalidCommandError;
+                        }
                         break;
                     case Commands.RIGHT:
-                        ToyRobot.Right();
+                        if (ToyRobot.Right())
+                        {
+                            ToyRobot.Hints = executeResult;
+                        }
+                        else
+                        {
+                            ToyRobot.Hints = invalidCommandError;
+                        }
                         break;
                     case Commands.REPORT:
-                        result = ToyRobot.Report();
+                        ToyRobot.Hints = ToyRobot.Report();
                         break;
                     default:
                         break;
@@ -57,12 +87,9 @@ namespace Simple.Toy.Robot.Apps
             }
             catch (Exception)
             {
-                Console.Write("Unknown command please try again.");
+                return ToyRobot.Hints = invalidCommandError;
             }
-
-            
-
-            return result;
+            return ToyRobot.Hints;
         }
 
         private string GetCommand(string userInput)
@@ -81,7 +108,7 @@ namespace Simple.Toy.Robot.Apps
             }
             catch (Exception)
             {
-                throw new Exception("Invalid Command coming!");
+                throw new Exception(invalidCommandError);
             }
 
             return command;
@@ -99,7 +126,7 @@ namespace Simple.Toy.Robot.Apps
         
         private ParamaterRecorder RecordParameter(string userInput)
         {
-            ParamaterRecorder pr = new ParamaterRecorder();
+            ParamaterRecorder paramaterArgs = new ParamaterRecorder();
             try
             {
                 var commandParameter = GetParameterString(userInput);
@@ -107,18 +134,21 @@ namespace Simple.Toy.Robot.Apps
                 string[] parametersArray = paramaters.Split(',');
                 if (parametersArray.Length == 3)
                 {
-                    pr.PositionX = Convert.ToInt32(parametersArray[0]);
-                    pr.PositionY = Convert.ToInt32(parametersArray[1]);
-                    pr.direction = (Direction)Enum.Parse(typeof(Direction), parametersArray[2], true);
+                    paramaterArgs.PositionX = Convert.ToInt32(parametersArray[0]);
+                    paramaterArgs.PositionY = Convert.ToInt32(parametersArray[1]);
+                    paramaterArgs.Direction = (Direction)Enum.Parse(typeof(Direction), parametersArray[2], true);
                 }
-
+                else
+                {
+                    paramaterArgs = null;
+                    ToyRobot.Hints = invalidCommandError;
+                }
             }
             catch (Exception)
             {
-
-                throw new Exception("Cannot get position X!");
+                throw new Exception(invalidCommandError);
             }
-            return pr;
+            return paramaterArgs;
         }
 
         private bool CheckUserInput(string userInput)
@@ -129,19 +159,19 @@ namespace Simple.Toy.Robot.Apps
                 {
                     if ((Commands)Enum.Parse(typeof(Commands), userInput, true) != Commands.PLACE)
                     {
-                        if (CommandsInitializeChecking(userInput))
+                        if (CommandsCheck(userInput))
                         {
                             return true;
                         }
                         else
                         {
-                            Console.Write("Unknown command please try again.");
+                            ToyRobot.Hints = invalidCommandError;
                             return false;
                         }
                     }
                     else
                     {
-                        Console.Write("Unknown command please try again.");
+                        ToyRobot.Hints = invalidCommandError;
                         return false;
                     }
                 }
@@ -149,19 +179,19 @@ namespace Simple.Toy.Robot.Apps
                 {
                     if (userInput.IndexOf(" ") == -1)
                     {
-                        Console.Write("Unknown command please try again.");
+                        ToyRobot.Hints = invalidCommandError;
                         return false;
                     }
                     else
                     {
                         string str = userInput.Substring(0, userInput.IndexOf(" "));
-                        if (CommandsInitializeChecking(str))
+                        if (CommandsCheck(str))
                         {
                             return true;
                         }
                         else
                         {
-                            Console.Write("Unknown command please try again.");
+                            ToyRobot.Hints = invalidCommandError;
                             return false;
                         }
 
@@ -170,22 +200,20 @@ namespace Simple.Toy.Robot.Apps
             }
             catch (Exception)
             {
-
-                Console.Write("Unknown error please try again.");
-                return true;
-                throw new Exception();
+                ToyRobot.Hints = invalidCommandError;
+                return false;
             }
         }
 
-        private bool CommandsInitializeChecking(string userInput)
+        private bool CommandsCheck(string userInput)
         {
             try
             {
                 if (Enum.IsDefined(typeof(Commands), userInput))
                 {
-                    if ((Commands)Enum.Parse(typeof(Commands), userInput, true) != Commands.PLACE)
+                    if (ToyRobot.Direction == 0 && (Commands)Enum.Parse(typeof(Commands), userInput, true) != Commands.PLACE)
                     {
-                        Console.Write("Please 'PLACE' a position to start.");
+                        ToyRobot.Hints = invalidCommandError;
                         return false;
                     }
                     else
@@ -195,21 +223,15 @@ namespace Simple.Toy.Robot.Apps
                 }
                 else
                 {
-                    Console.Write("Unknown command please try again.");
+                    ToyRobot.Hints = invalidCommandError;
                     return false;
                 }
             }
             catch (Exception)
             {
-                Console.Write("Unknown error please try again.");
-                return true;
-                throw new Exception();
+                ToyRobot.Hints = invalidCommandError;
+                return false;
             }
-        }
-
-        private bool CheckParameter(string userInput)
-        {
-            return true;
         }
     }
 }

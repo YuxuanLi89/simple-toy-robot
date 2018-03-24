@@ -10,8 +10,8 @@ namespace Simple.Toy.Robot.Apps
     {
         #region Properties
         private int boundLimits = 5;
-        public int PositionX { get; set; }
-        public int PositionY { get; set; }
+        public int? PositionX { get; set; }
+        public int? PositionY { get; set; }
         public Direction Direction { get; set; }
         public Commands Commands { get; set; }
         public string _hints = string.Empty;
@@ -26,16 +26,22 @@ namespace Simple.Toy.Robot.Apps
         {
             try
             {
-                PositionX = positionX;
-                PositionY = positionY;
-                Direction = direction;
+                if (positionX < 0 || positionY < 0 || positionX > boundLimits || positionY > boundLimits)
+                {
+                    return false;
+                }
+                else
+                {
+                    PositionX = positionX;
+                    PositionY = positionY;
+                    Direction = direction;
+                    return true;
+                }
             }
             catch (Exception)
             {
-
-                throw new Exception();
+                return false;
             }
-            return true;
         }
 
         public string Report()
@@ -49,7 +55,7 @@ namespace Simple.Toy.Robot.Apps
 
         public bool Move()
         {
-            if (CheckCommand("move"))
+            if (CheckMove())
             {
                 int newPositionX = LeftRightMove();
                 int newPositionY = UpDownMove();
@@ -67,28 +73,28 @@ namespace Simple.Toy.Robot.Apps
         {
             if (Direction == Direction.EAST)
             {
-                return PositionX + 1;
+                return PositionX.Value + 1;
             }
             if (Direction == Direction.WEST)
             {
-                return PositionX - 1;
+                return PositionX.Value - 1;
             }
 
-            return PositionX;
+            return PositionX.Value;
         }
 
         public int UpDownMove()
         {
             if (Direction == Direction.NORTH)
             {
-                return PositionY + 1;
+                return PositionY.Value + 1;
             }
             if (Direction == Direction.SOUTH)
             {
-                return PositionY - 1;
+                return PositionY.Value - 1;
             }
 
-            return PositionY;
+            return PositionY.Value;
         }
 
         public bool Left()
@@ -109,7 +115,7 @@ namespace Simple.Toy.Robot.Apps
         {
             try
             {
-                Direction = (Convert.ToInt16(Direction) < 4) ? Direction + 1 : Direction - 3;
+                Direction = (Convert.ToInt32(Direction) < 4) ? Direction + 1 : Direction - 3;
             }
             catch (Exception)
             {
@@ -123,20 +129,27 @@ namespace Simple.Toy.Robot.Apps
         {
             if (x < 0 || y < 0 || x > boundLimits || y > boundLimits)
             {
-                Hints = ("Toy Robot will drop down from table");
                 return false;
             }
             return true;
         }
 
-        public bool CheckCommand(string Commands)
+        public bool CheckMove()
         {
-            if (PositionX >= boundLimits || PositionY >= boundLimits)
+            if (PositionX.HasValue && PositionY.HasValue )
             {
-                Hints = String.Format("Cannot {0}, please select a valid Position.", Commands);
+                if (PositionX > boundLimits || PositionY > boundLimits)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                Hints = String.Format("Please 'PLACE' a postion before you 'MOVE'.");
                 return false;
             }
-            return true;
+
         }
 
     }
