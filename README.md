@@ -2,7 +2,7 @@
 
 A C# console project for Toy Robot Simulator, which using VS2017, .NET 4.6.1 and VisualStudio Unit Testing tools.
 
-# Description, Rules and Constraints please see PROBLEM.MD which under https://github.com/YuxuanLi89/simple-toy-robot
+Description, Rules and Constraints please see PROBLEM.MD which under https://github.com/YuxuanLi89/simple-toy-robot
 
 # How to run this project:
   1. Clone from: https://github.com/YuxuanLi89/simple-toy-robot
