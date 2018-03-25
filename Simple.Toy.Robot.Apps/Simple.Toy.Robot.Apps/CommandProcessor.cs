@@ -14,10 +14,9 @@ namespace Simple.Toy.Robot.Apps
         }
 
         public ToyRobots ToyRobot { get; set; }
-
-        private const string invalidCommandError = "Invalid input, please try again!";
-        private const string executeResult = "Please continue...";
-        private const string invalidMoveError = "Invalid Move.";
+        private const string invalidCommandError = "Invalid input, please try again!"; // Reminder for invalid user input
+        private const string executeResult = "Please continue..."; // Reminder for valid robot execution
+        private const string invalidMoveError = "Invalid Move."; // Reminder for invalid robot movement
 
         public string ProcessCommand(string userInput)
         {
@@ -26,6 +25,7 @@ namespace Simple.Toy.Robot.Apps
             ParamaterRecorder paraRecorder = new ParamaterRecorder();
             try
             {
+                // If user input contains correct command
                 if (CheckUserInput(userInput))
                 {
                     command = GetCommand(userInput);
@@ -35,9 +35,10 @@ namespace Simple.Toy.Robot.Apps
                     return ToyRobot.Hints;
                 }
 
+                // Execution based on command
                 switch ((Commands)Enum.Parse(typeof(Commands), command, true))
                 {
-                    case Commands.PLACE:
+                    case Commands.PLACE: // If valid, show placed position
                         paraRecorder = RecordParameter(userInput);
                         if(ToyRobot.Place(paraRecorder.PositionX, paraRecorder.PositionY, paraRecorder.Direction))
                         {
@@ -48,7 +49,7 @@ namespace Simple.Toy.Robot.Apps
                             ToyRobot.Hints = invalidCommandError;
                         }
                         break;
-                    case Commands.MOVE:
+                    case Commands.MOVE: // If valid movement, reminder user continue play
                         if (ToyRobot.Move())
                         {
                             ToyRobot.Hints = executeResult;
@@ -58,7 +59,7 @@ namespace Simple.Toy.Robot.Apps
                             ToyRobot.Hints = invalidMoveError;
                         }
                         break;
-                    case Commands.LEFT:
+                    case Commands.LEFT: // If turn left is valid, reminder user continue play
                         if (ToyRobot.Left())
                         {
                             ToyRobot.Hints = executeResult;
@@ -68,7 +69,7 @@ namespace Simple.Toy.Robot.Apps
                             ToyRobot.Hints = invalidCommandError;
                         }
                         break;
-                    case Commands.RIGHT:
+                    case Commands.RIGHT: // If turn right is valid, reminder user continue play
                         if (ToyRobot.Right())
                         {
                             ToyRobot.Hints = executeResult;
@@ -78,7 +79,7 @@ namespace Simple.Toy.Robot.Apps
                             ToyRobot.Hints = invalidCommandError;
                         }
                         break;
-                    case Commands.REPORT:
+                    case Commands.REPORT: // Report robot current position
                         ToyRobot.Hints = ToyRobot.Report();
                         break;
                     default:
@@ -87,6 +88,7 @@ namespace Simple.Toy.Robot.Apps
             }
             catch (Exception)
             {
+                // Invalid user input
                 return ToyRobot.Hints = invalidCommandError;
             }
             return ToyRobot.Hints;
@@ -94,6 +96,7 @@ namespace Simple.Toy.Robot.Apps
 
         private string GetCommand(string userInput)
         {
+            // Return command from 'Commands' Enum based on user input
             string command = string.Empty;
             try
             {
@@ -116,6 +119,7 @@ namespace Simple.Toy.Robot.Apps
 
         private string GetParameterString(string userInput)
         {
+            // Return string of position X,Y and direction
             string parameterString = string.Empty;
             if (!string.IsNullOrEmpty(userInput))
             {
@@ -126,6 +130,7 @@ namespace Simple.Toy.Robot.Apps
         
         private ParamaterRecorder RecordParameter(string userInput)
         {
+            // Split parameter string to list, and stored position X, position Y and robot direction into parameter recorder 
             ParamaterRecorder paramaterArgs = new ParamaterRecorder();
             try
             {
@@ -153,13 +158,14 @@ namespace Simple.Toy.Robot.Apps
 
         private bool CheckUserInput(string userInput)
         {
+            // Check if user input is validated command and parameters or not
             try
             {
                 if (Enum.IsDefined(typeof(Commands), userInput))
                 {
                     if ((Commands)Enum.Parse(typeof(Commands), userInput, true) != Commands.PLACE)
                     {
-                        if (CommandsCheck(userInput))
+                        if (CommandsReconganize(userInput))
                         {
                             return true;
                         }
@@ -185,7 +191,7 @@ namespace Simple.Toy.Robot.Apps
                     else
                     {
                         string str = userInput.Substring(0, userInput.IndexOf(" "));
-                        if (CommandsCheck(str))
+                        if (CommandsReconganize(str))
                         {
                             return true;
                         }
@@ -205,8 +211,9 @@ namespace Simple.Toy.Robot.Apps
             }
         }
 
-        private bool CommandsCheck(string userInput)
+        private bool CommandsReconganize(string userInput)
         {
+            // Reconganize robot command match 'Commands' Enum or not, then validated robot action correct or wrong
             try
             {
                 if (Enum.IsDefined(typeof(Commands), userInput))

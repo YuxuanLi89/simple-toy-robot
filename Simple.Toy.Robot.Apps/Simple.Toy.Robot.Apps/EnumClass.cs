@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Simple.Toy.Robot.Apps
 {
+    //Direction for Robot move, turn and place
     public enum Direction
     {
         EAST = 1,
@@ -14,9 +15,9 @@ namespace Simple.Toy.Robot.Apps
         NORTH = 4,
     }
 
+    //Commands for Robot place, move, turn facing and report current position
     public enum Commands
     {
-
         PLACE = 1,
         MOVE = 2,
         LEFT = 3,

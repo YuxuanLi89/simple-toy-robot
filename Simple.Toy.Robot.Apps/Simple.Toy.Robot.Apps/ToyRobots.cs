@@ -8,14 +8,13 @@ namespace Simple.Toy.Robot.Apps
 {
     public class ToyRobots
     {
-        #region Properties
-        private int boundLimits = 5;
+        private int boundLimits = 5;    // Default table size is 5 x 5, only in this area is validated
         public int? PositionX { get; set; }
         public int? PositionY { get; set; }
         public Direction Direction { get; set; }
         public Commands Commands { get; set; }
-        public string _hints = string.Empty;
-        #endregion
+        public string _hints = string.Empty;    // To record robot response after took actions
+
         public string Hints
         {
             get { return _hints; }
@@ -24,10 +23,12 @@ namespace Simple.Toy.Robot.Apps
 
         public bool Place(int positionX, int positionY, Direction direction)
         {
+            // If position x and y not inside of 5 x 5, report!
             try
             {
                 if (positionX < 0 || positionY < 0 || positionX > boundLimits || positionY > boundLimits)
                 {
+                    Hints = "Position out of table!";
                     return false;
                 }
                 else
@@ -40,26 +41,30 @@ namespace Simple.Toy.Robot.Apps
             }
             catch (Exception)
             {
+                // Unknown error
                 return false;
             }
         }
 
         public string Report()
         {
-            if (PositionX <=5 && PositionY <=5)
+            // Return current robot position
+            if (CheckPosition())
             {
                 return String.Format("{0},{1},{2}", PositionX, PositionY, Direction.ToString());
             }
-            return "";
+            Hints = "Please 'PLACE' a postion before you execute any command.";
+            return Hints;
         }
 
         public bool Move()
         {
-            if (CheckMove())
+            // Execute 'Move' command
+            if (CheckPosition())
             {
                 int newPositionX = LeftRightMove();
                 int newPositionY = UpDownMove();
-                if (CheckPosition(newPositionX, newPositionY))
+                if (CheckIfOnTable(newPositionX, newPositionY))
                 {
                     PositionX = newPositionX;
                     PositionY = newPositionY;
@@ -71,6 +76,7 @@ namespace Simple.Toy.Robot.Apps
 
         public int LeftRightMove()
         {
+            // Moving horizontally 
             if (Direction == Direction.EAST)
             {
                 return PositionX.Value + 1;
@@ -85,6 +91,7 @@ namespace Simple.Toy.Robot.Apps
 
         public int UpDownMove()
         {
+            // Moving vertically
             if (Direction == Direction.NORTH)
             {
                 return PositionY.Value + 1;
@@ -99,13 +106,21 @@ namespace Simple.Toy.Robot.Apps
 
         public bool Left()
         {
+            // Change robot facing direction, turn to left
             try
             {
-                Direction = (Convert.ToInt32(Direction) > 1) ? Direction - 1 : Direction + 3;
+                if (CheckPosition())
+                {
+                    Direction = (Convert.ToInt32(Direction) > 1) ? Direction - 1 : Direction + 3;
+                }
+                else
+                {
+                    Hints = "Please 'PLACE' a postion before you execute any command.";
+                    return false;
+                }
             }
             catch (Exception)
             {
-                return false;
                 throw new Exception("Toy Robot cannot move to left");
             }
             return true;
@@ -113,40 +128,52 @@ namespace Simple.Toy.Robot.Apps
 
         public bool Right()
         {
+            // Change robot facing direction, turn to right
             try
             {
-                Direction = (Convert.ToInt32(Direction) < 4) ? Direction + 1 : Direction - 3;
+                if (CheckPosition())
+                {
+                    Direction = (Convert.ToInt32(Direction) < 4) ? Direction + 1 : Direction - 3;
+                }
+                else
+                {
+                    Hints = "Please 'PLACE' a postion before you execute any command.";
+                    return false;
+                }
             }
             catch (Exception)
             {
-                return false;
                 throw new Exception("Toy Robot cannot move to right");
             }
             return true;
         }
 
-        public bool CheckPosition(int x, int y)
+        public bool CheckIfOnTable(int x, int y)
         {
+            // Check if inside of default table area
             if (x < 0 || y < 0 || x > boundLimits || y > boundLimits)
             {
+                Hints = "Robot will drop of the table, invalid position.";
                 return false;
             }
             return true;
         }
 
-        public bool CheckMove()
+        public bool CheckPosition()
         {
+            // Check if robot has been initialize or not, as well check position is valid or not
             if (PositionX.HasValue && PositionY.HasValue )
             {
                 if (PositionX > boundLimits || PositionY > boundLimits)
                 {
+                    Hints = "Robot will drop of the table, invalid position.";
                     return false;
                 }
                 return true;
             }
             else
             {
-                Hints = String.Format("Please 'PLACE' a postion before you 'MOVE'.");
+                Hints = "Please 'PLACE' a postion before you execute any command.";
                 return false;
             }
 
